@@ -18,11 +18,11 @@
   ],
   "env": {
     "FLASK_ENV": "production",
-    "SECRET_KEY": "@secret-key",
-    "SUPABASE_URL": "@supabase-url",
-    "SUPABASE_KEY": "@supabase-key",
-    "SUPABASE_DB_URL": "@supabase-db-url",
-    "BOBGO_API_KEY": "@bobgo-api-key"
+    "SECRET_KEY": "modern-store-vercel-secret-key-change-in-dashboard-xyz123",
+    "SUPABASE_URL": "https://placeholder.supabase.co",
+    "SUPABASE_KEY": "placeholder-key-update-in-vercel-dashboard",
+    "SUPABASE_DB_URL": "postgresql://placeholder:placeholder@placeholder.supabase.co:5432/postgres",
+    "BOBGO_API_KEY": "placeholder-bobgo-key"
   },
   "outputDirectory": "static"
 }
