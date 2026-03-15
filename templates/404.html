@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found{% endblock %}
+
+{% block content %}
+<section style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 100px 0;">
+    <div class="container">
+        <div class="text-center">
+            <div style="font-size: 8rem; margin-bottom: 24px;">😕</div>
+            <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 16px; color: var(--dark);">404</h1>
+            <h2 style="font-size: 1.75rem; margin-bottom: 16px; color: var(--dark);">Page Not Found</h2>
+            <p style="color: var(--gray); font-size: 1.125rem; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                Oops! The page you're looking for doesn't exist or has been moved.
+            </p>
+            <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                <a href="/" class="btn btn-gradient btn-lg">← Back to Home</a>
+                <a href="/shop" class="btn btn-secondary btn-lg" style="background: var(--light); color: var(--dark); border: none;">Browse Shop</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

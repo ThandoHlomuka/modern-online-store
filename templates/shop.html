@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Shop{% endblock %}
+
+{% block content %}
+<!-- Shop Header -->
+<section class="shop-header">
+    <div class="container">
+        <h1>Shop All Products</h1>
+        <p>Discover our complete collection of premium products</p>
+        
+        <div class="category-filter">
+            {% for category in categories %}
+            <button class="category-btn {% if category == current_category %}active{% endif %}" 
+                    onclick="window.location.href='/shop?category={{ category }}'">
+                {{ category }}
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Products Grid -->
+<section>
+    <div class="container">
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card fade-in" style="animation-delay: {{ loop.index * 0.1 }}s">
+                <div class="product-image">
+                    <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy">
+                    {% if product.rating >= 4.8 %}
+                    <span class="product-badge">Best Seller</span>
+                    {% endif %}
+                    <div class="product-actions">
+                        <button class="action-btn" title="Add to wishlist">♡</button>
+                        <a href="/product/{{ product.id }}" class="action-btn" title="Quick view">👁</a>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <span class="product-category">{{ product.category }}</span>
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <p class="product-description">{{ product.description }}</p>
+                    <div class="product-footer">
+                        <span class="product-price">${{ product.price }}</span>
+                        <div class="product-rating">
+                            ★ {{ product.rating }}
+                            <span>({{ product.reviews }})</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-gradient btn-block mt-4 add-to-cart-btn" data-product-id="{{ product.id }}">
+                        🛒 Add to Cart
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if products|length == 0 %}
+        <div class="empty-cart">
+            <div class="empty-cart-icon">📦</div>
+            <h2>No products found</h2>
+            <p>Try selecting a different category</p>
+            <a href="/shop" class="btn btn-gradient">View All Products</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

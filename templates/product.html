@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<section class="product-detail">
+    <div class="container">
+        <div class="product-detail-grid">
+            <div class="product-detail-image">
+                <img src="{{ product.image }}" alt="{{ product.name }}">
+            </div>
+            
+            <div class="product-detail-info">
+                <span class="product-detail-category">{{ product.category }}</span>
+                <h1 class="product-detail-title">{{ product.name }}</h1>
+                
+                <div class="product-detail-rating">
+                    <div class="stars">
+                        {% for i in range(5) %}
+                            {% if i < product.rating|int %}★{% else %}☆{% endif %}
+                        {% endfor %}
+                    </div>
+                    <span>{{ product.rating }} out of 5</span>
+                    <span>({{ product.reviews }} reviews)</span>
+                </div>
+                
+                <div class="product-detail-price">${{ product.price }}</div>
+                
+                <p class="product-detail-description">{{ product.description }}</p>
+                
+                <div class="product-detail-actions">
+                    <button class="btn btn-gradient btn-lg add-to-cart-btn" data-product-id="{{ product.id }}" style="flex: 1;">
+                        🛒 Add to Cart
+                    </button>
+                    <button class="btn btn-secondary btn-lg" style="background: var(--light); color: var(--dark);">
+                        ♡
+                    </button>
+                </div>
+                
+                <div class="product-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Availability</span>
+                        <span class="meta-value" style="color: var(--success);">In Stock</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">SKU</span>
+                        <span class="meta-value">PROD-{{ product.id }}-{{ product.category[:3].upper() }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Shipping</span>
+                        <span class="meta-value">Free on orders $100+</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Returns</span>
+                        <span class="meta-value">30-day policy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Products -->
+{% if related_products %}
+<section style="background: var(--white);">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-tag">Related</span>
+            <h2 class="section-title">You May Also Like</h2>
+        </div>
+        
+        <div class="products-grid">
+            {% for product in related_products %}
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy">
+                    <div class="product-actions">
+                        <button class="action-btn" title="Add to wishlist">♡</button>
+                        <a href="/product/{{ product.id }}" class="action-btn" title="Quick view">👁</a>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <span class="product-category">{{ product.category }}</span>
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <p class="product-description">{{ product.description }}</p>
+                    <div class="product-footer">
+                        <span class="product-price">${{ product.price }}</span>
+                        <div class="product-rating">
+                            ★ {{ product.rating }}
+                            <span>({{ product.reviews }})</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-gradient btn-block mt-4 add-to-cart-btn" data-product-id="{{ product.id }}">
+                        🛒 Add to Cart
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

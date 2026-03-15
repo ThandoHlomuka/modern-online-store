@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <span class="hero-badge">✨ New Collection 2024</span>
+            <h1>Discover Premium Products for Modern Living</h1>
+            <p>Explore our curated collection of high-quality products designed to elevate your everyday experience. Style meets functionality.</p>
+            <div class="hero-buttons">
+                <a href="/shop" class="btn btn-primary btn-lg">
+                    Shop Now →
+                </a>
+                <a href="#featured" class="btn btn-secondary btn-lg">
+                    View Collection
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section id="featured">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-tag">Featured</span>
+            <h2 class="section-title">Trending Products</h2>
+            <p class="section-subtitle">Handpicked selections from our most popular items</p>
+        </div>
+        
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card fade-in" style="animation-delay: {{ loop.index * 0.1 }}s">
+                <div class="product-image">
+                    <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy">
+                    {% if loop.index <= 2 %}
+                    <span class="product-badge">Hot</span>
+                    {% endif %}
+                    <div class="product-actions">
+                        <button class="action-btn" title="Add to wishlist">♡</button>
+                        <button class="action-btn" title="Quick view">👁</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <span class="product-category">{{ product.category }}</span>
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <p class="product-description">{{ product.description }}</p>
+                    <div class="product-footer">
+                        <span class="product-price">${{ product.price }}</span>
+                        <div class="product-rating">
+                            ★ {{ product.rating }}
+                            <span>({{ product.reviews }})</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="/shop" class="btn btn-gradient btn-lg">View All Products →</a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-tag">Why Choose Us</span>
+            <h2 class="section-title">The ModernStore Difference</h2>
+            <p class="section-subtitle">We're committed to providing the best shopping experience</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🚚</div>
+                <h3 class="feature-title">Free Shipping</h3>
+                <p class="feature-text">Free shipping on all orders over $100. Fast and reliable delivery worldwide.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Secure Payment</h3>
+                <p class="feature-text">Your payments are protected with industry-leading encryption technology.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">↩️</div>
+                <h3 class="feature-title">Easy Returns</h3>
+                <p class="feature-text">30-day hassle-free returns. No questions asked, your satisfaction guaranteed.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3 class="feature-title">24/7 Support</h3>
+                <p class="feature-text">Our dedicated support team is here to help you around the clock.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section style="background: var(--gradient); padding: 100px 0;">
+    <div class="container">
+        <div class="section-header" style="color: var(--white);">
+            <h2 class="section-title" style="color: var(--white);">Stay in the Loop</h2>
+            <p class="section-subtitle" style="color: rgba(255,255,255,0.9);">Subscribe to get special offers, free giveaways, and exclusive deals</p>
+        </div>
+        
+        <div style="max-width: 500px; margin: 0 auto; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+            <input type="email" placeholder="Enter your email" style="flex: 1; min-width: 250px; padding: 16px 24px; border-radius: 50px; border: none; font-size: 1rem; outline: none;">
+            <button class="btn btn-primary" style="white-space: nowrap;">Subscribe</button>
+        </div>
+    </div>
+</section>
+{% endblock %}
