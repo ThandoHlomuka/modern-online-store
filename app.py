@@ -2,18 +2,15 @@
 Modern Online Store - Flask Application
 A beautiful, eye-catching online store built with Python and Flask
 
-For Vercel deployment, this app uses serverless functions.
-Session data is stored in cookies for serverless compatibility.
+Vercel Serverless Deployment Ready
 """
 
-from flask import Flask, render_template, request, jsonify, session, make_response
-import json
+from flask import Flask, render_template, request, jsonify, session
 import os
-import base64
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'modern-store-secret-key-2024')
-app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
@@ -104,11 +101,13 @@ PRODUCTS = [
 # Categories
 CATEGORIES = ['All', 'Electronics', 'Accessories', 'Bags', 'Footwear']
 
+
 @app.route('/')
 def index():
     """Home page with featured products"""
     featured_products = PRODUCTS[:4]
     return render_template('index.html', products=featured_products, categories=CATEGORIES)
+
 
 @app.route('/shop')
 def shop():
@@ -120,6 +119,7 @@ def shop():
         filtered_products = [p for p in PRODUCTS if p['category'] == category]
     return render_template('shop.html', products=filtered_products, categories=CATEGORIES, current_category=category)
 
+
 @app.route('/product/<int:product_id>')
 def product_detail(product_id):
     """Product detail page"""
@@ -129,10 +129,12 @@ def product_detail(product_id):
         return render_template('product.html', product=product, related_products=related_products)
     return render_template('404.html'), 404
 
+
 @app.route('/cart')
 def cart():
     """Shopping cart page"""
     return render_template('cart.html')
+
 
 @app.route('/api/cart', methods=['GET'])
 def get_cart():
@@ -141,25 +143,30 @@ def get_cart():
     total = sum(item['price'] * item['quantity'] for item in cart)
     return jsonify({'items': cart, 'total': round(total, 2), 'count': len(cart)})
 
+
 @app.route('/api/cart/add', methods=['POST'])
 def add_to_cart():
     """Add item to cart"""
-    data = request.json
-    product_id = data.get('product_id')
-    
-    product = next((p for p in PRODUCTS if p['id'] == product_id), None)
+    data = request.get_json()
+    product_id = data.get('product_id') if data else None
+
+    if product_id is None:
+        return jsonify({'error': 'Product ID required'}), 400
+
+    product = next((p for p in PRODUCTS if p['id'] == int(product_id)), None)
     if not product:
         return jsonify({'error': 'Product not found'}), 404
-    
+
     cart = session.get('cart', [])
-    
+
     # Check if product already in cart
     for item in cart:
-        if item['id'] == product_id:
+        if item['id'] == int(product_id):
             item['quantity'] += 1
             session['cart'] = cart
+            session.modified = True
             return jsonify({'message': 'Quantity updated', 'cart_count': len(cart)})
-    
+
     # Add new item
     cart.append({
         'id': product['id'],
@@ -169,66 +176,112 @@ def add_to_cart():
         'quantity': 1
     })
     session['cart'] = cart
+    session.modified = True
     return jsonify({'message': 'Added to cart', 'cart_count': len(cart)})
+
 
 @app.route('/api/cart/remove', methods=['POST'])
 def remove_from_cart():
     """Remove item from cart"""
-    data = request.json
-    product_id = data.get('product_id')
-    
+    data = request.get_json()
+    product_id = data.get('product_id') if data else None
+
     cart = session.get('cart', [])
     cart = [item for item in cart if item['id'] != product_id]
     session['cart'] = cart
-    
+    session.modified = True
+
     total = sum(item['price'] * item['quantity'] for item in cart)
     return jsonify({'items': cart, 'total': round(total, 2), 'count': len(cart)})
+
 
 @app.route('/api/cart/update', methods=['POST'])
 def update_cart():
     """Update item quantity in cart"""
-    data = request.json
-    product_id = data.get('product_id')
-    quantity = data.get('quantity', 1)
-    
+    data = request.get_json()
+    product_id = data.get('product_id') if data else None
+    quantity = data.get('quantity', 1) if data else 1
+
     cart = session.get('cart', [])
     for item in cart:
         if item['id'] == product_id:
             item['quantity'] = max(1, quantity)
             break
-    
+
     session['cart'] = cart
+    session.modified = True
     total = sum(item['price'] * item['quantity'] for item in cart)
     return jsonify({'items': cart, 'total': round(total, 2), 'count': len(cart)})
+
 
 @app.route('/api/cart/clear', methods=['POST'])
 def clear_cart():
     """Clear the cart"""
     session['cart'] = []
+    session.modified = True
     return jsonify({'message': 'Cart cleared', 'items': [], 'total': 0, 'count': 0})
+
 
 @app.route('/checkout')
 def checkout():
     """Checkout page"""
     return render_template('checkout.html')
 
+
 @app.route('/api/checkout', methods=['POST'])
 def process_checkout():
     """Process checkout"""
-    data = request.json
-    # Here you would integrate with a payment processor
     session['cart'] = []
+    session.modified = True
     return jsonify({'message': 'Order placed successfully!', 'order_id': 'ORD-' + str(os.urandom(4).hex()).upper()})
+
 
 @app.errorhandler(404)
 def not_found(e):
     """404 error page"""
     return render_template('404.html'), 404
 
+
 # Vercel serverless handler
-def handler(request):
-    """Vercel serverless entry point"""
-    return app(request.environ, lambda *args: None)
+def handler(request, context):
+    """Vercel serverless entry point using WSGI adapter"""
+    from wsgiref.handlers import SimpleHandler
+    from io import BytesIO
+    
+    # Create WSGI environ from request
+    environ = {
+        'REQUEST_METHOD': request.method,
+        'PATH_INFO': request.path,
+        'QUERY_STRING': request.query or '',
+        'CONTENT_TYPE': request.headers.get('content-type', ''),
+        'CONTENT_LENGTH': request.headers.get('content-length', '0'),
+        'SERVER_NAME': request.headers.get('host', 'localhost'),
+        'SERVER_PORT': '443',
+        'wsgi.url_scheme': 'https',
+        'wsgi.input': BytesIO(request.body or b''),
+        'wsgi.errors': BytesIO(),
+        'HTTP_COOKIE': request.headers.get('cookie', ''),
+    }
+    
+    # Add all headers
+    for key, value in request.headers.items():
+        header_key = 'HTTP_' + key.upper().replace('-', '_')
+        environ[header_key] = value
+    
+    # Response handling
+    response_data = {'statusCode': 200, 'headers': {}, 'body': ''}
+    
+    def start_response(status, response_headers):
+        response_data['statusCode'] = int(status.split()[0])
+        for key, value in response_headers:
+            response_data['headers'][key] = value
+    
+    # Run the Flask app
+    result = app(environ, start_response)
+    response_data['body'] = b''.join(result).decode('utf-8')
+    
+    return response_data
+
 
 # Local development
 if __name__ == '__main__':
