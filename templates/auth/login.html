@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<section style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 120px 0; background: var(--gradient);">
+    <div class="container">
+        <div style="max-width: 450px; margin: 0 auto; background: var(--white); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-xl);">
+            <div class="text-center mb-4">
+                <h1 style="font-size: 2rem; font-weight: 800; color: var(--dark); margin-bottom: 8px;">Welcome Back</h1>
+                <p style="color: var(--gray);">Sign in to your account to continue</p>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" style="padding: 12px 16px; border-radius: var(--radius); margin-bottom: 20px; background: {{ '#dcfce7' if category == 'success' else '#fee2e2' if category == 'danger' else '#dbeafe' }}; color: {{ '#166534' if category == 'success' else '#991b1b' if category == 'danger' else '#1e40af' }};">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" action="{{ url_for('login') }}">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    {{ form.username(class="form-control", placeholder="Enter your username", required=true) }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    {{ form.password(class="form-control", placeholder="Enter your password", required=true) }}
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        {{ form.remember_me() }}
+                        <label for="remember_me" style="margin: 0; cursor: pointer; font-weight: 400;">Remember me</label>
+                    </div>
+                    <a href="#" style="color: var(--primary); font-weight: 500; font-size: 0.9rem;">Forgot password?</a>
+                </div>
+                
+                {{ form.submit(class="btn btn-gradient btn-block btn-lg") }}
+            </form>
+            
+            <div class="text-center mt-4" style="padding-top: 24px; border-top: 1px solid var(--light);">
+                <p style="color: var(--gray);">Don't have an account? <a href="{{ url_for('register') }}" style="color: var(--primary); font-weight: 600;">Sign up</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+<style>
+.form-control {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid var(--light);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    transition: var(--transition);
+    font-family: inherit;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.alert {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
