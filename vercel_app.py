@@ -25,8 +25,16 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 import json
 from datetime import datetime
 
-# Import database and models
-from database import DATABASE_URI, USE_POSTGRES
+# Import database and models - this will fail if no database is configured
+try:
+    from database import DATABASE_URI, USE_POSTGRES
+    logger.info(f"Database module loaded successfully. USE_POSTGRES={USE_POSTGRES}")
+    logger.info(f"DATABASE_URI configured: {'Yes' if DATABASE_URI else 'No'}")
+except Exception as e:
+    logger.error(f"Failed to load database module: {e}")
+    logger.error(traceback.format_exc())
+    raise
+
 from models import db, User, Product, Order, OrderItem, Address, Cart, CartItem
 from models import ShippingZone, ShippingMethod, CurrencyRate, OrderTracking
 from forms import (LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm,

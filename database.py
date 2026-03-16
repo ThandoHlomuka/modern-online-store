@@ -1,30 +1,36 @@
 """
 Database Configuration for Modern Online Store
-Uses SQLite for local development
+Uses PostgreSQL exclusively
 """
 
 import os
 
 
 def get_database_uri():
-    """Get database URI from environment or use local SQLite"""
-    # Check for PostgreSQL connection string (for production)
-    database_url = os.environ.get('DATABASE_URL')
+    """Get PostgreSQL database URI from environment"""
+    # Check for PostgreSQL connection string in order of priority
+    database_url = (
+        os.environ.get('DATABASE_URL') or
+        os.environ.get('POSTGRES_URL') or
+        os.environ.get('POSTGRES_URL_NON_POOLING') or
+        os.environ.get('SUPABASE_DB_URL')
+    )
 
-    if database_url:
-        # Convert postgres:// to postgresql:// for SQLAlchemy
-        if database_url.startswith('postgres://'):
-            database_url = database_url.replace('postgres://', 'postgresql://', 1)
-        # Fix for Vercel PostgreSQL - ensure psycopg2 is used
-        if database_url.startswith('postgresql://'):
-            return database_url
+    if not database_url:
+        raise ValueError(
+            "No PostgreSQL database configured. "
+            "Please set DATABASE_URL, POSTGRES_URL, or SUPABASE_DB_URL environment variable."
+        )
 
-    # Fallback to local SQLite
-    return 'sqlite:///store.db'
+    # Convert postgres:// to postgresql:// for SQLAlchemy compatibility
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+    return database_url
 
 
-# Database configuration
+# Database configuration - will raise error if no database URL is set
 DATABASE_URI = get_database_uri()
 
-# Use PostgreSQL if DATABASE_URL is set, otherwise SQLite
-USE_POSTGRES = 'postgresql' in DATABASE_URI
+# Always using PostgreSQL
+USE_POSTGRES = True

@@ -2,8 +2,7 @@
 Modern Online Store - Flask Application
 With Authentication, User Profiles, Admin Dashboard, Multi-Currency & Shipping
 
-Vercel Serverless Deployment Ready
-SQLite Database (with PostgreSQL support for production)
+PostgreSQL Database Required
 """
 
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash, abort

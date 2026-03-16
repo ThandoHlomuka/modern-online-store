@@ -1,5 +1,9 @@
-# Vercel ignore file
-# Files to ignore during Vercel deployment
+# Vercel ignore file - clear cache on every deploy
+# This forces Vercel to rebuild from scratch
+
+# Force cache clear
+.cache/
+.vercel/cache/
 
 # Development files
 .env
@@ -16,7 +20,7 @@
 .git/
 .gitignore
 
-# Node modules (if any)
+# Node modules
 node_modules/
 
 # Build artifacts
@@ -33,5 +37,12 @@ Thumbs.db
 deploy.bat
 run.bat
 
-# Documentation (optional - include if you want README served)
-# README.md
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.eggs/
+*.egg-info/

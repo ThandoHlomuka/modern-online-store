@@ -15,5 +15,11 @@
       "src": "/(.*)",
       "dest": "vercel_app.py"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "PIP_NO_CACHE_DIR": "1",
+      "PIP_DISABLE_PIP_VERSION_CHECK": "1"
+    }
+  }
 }

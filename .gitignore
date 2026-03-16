@@ -24,8 +24,6 @@ pip-delete-this-directory.txt
 instance/
 .webassets-cache
 *.db
-*.sqlite
-*.sqlite3
 
 # Environment
 .env
