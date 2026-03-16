@@ -15,7 +15,9 @@ def get_database_uri():
         # Convert postgres:// to postgresql:// for SQLAlchemy
         if database_url.startswith('postgres://'):
             database_url = database_url.replace('postgres://', 'postgresql://', 1)
-        return database_url
+        # Fix for Vercel PostgreSQL - ensure psycopg2 is used
+        if database_url.startswith('postgresql://'):
+            return database_url
 
     # Fallback to local SQLite
     return 'sqlite:///store.db'

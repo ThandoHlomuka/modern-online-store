@@ -50,15 +50,8 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
-# Initialize database
+# Initialize database (lazy initialization - tables created on first request)
 db.init_app(app)
-
-# Create tables if they don't exist
-with app.app_context():
-    try:
-        db.create_all()
-    except Exception as e:
-        print(f"Database create error: {e}")
 
 
 @login_manager.user_loader
