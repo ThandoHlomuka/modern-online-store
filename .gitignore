@@ -58,3 +58,6 @@ htmlcov/
 *.bak
 *.tmp
 Thumbs.db
+
+.vercel
+.env*.local
