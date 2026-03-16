@@ -28,7 +28,7 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(50))
     phone = db.Column(db.String(20))
     avatar = db.Column(db.String(500), default='default-avatar.png')
-    avatar_path = db.Column(db.String(500))  # Supabase storage path
+    avatar_path = db.Column(db.String(500))  # Local storage path for avatar
     currency_preference = db.Column(db.String(3), default='ZAR')  # ZAR, USD, EUR, etc.
     is_admin = db.Column(db.Boolean, default=False)
     is_active = db.Column(db.Boolean, default=True)
