@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block content %}
+<div class="admin-layout" style="display: flex; min-height: 100vh; padding-top: 70px;">
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar" style="width: 280px; background: var(--dark); color: var(--white); padding: 24px; position: fixed; height: 100vh; overflow-y: auto;">
+        <div style="margin-bottom: 32px;">
+            <h2 style="font-size: 1.5rem; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;">Admin Panel</h2>
+            <p style="color: var(--gray-light); font-size: 0.9rem;">Welcome, {{ current_user.get_full_name() }}</p>
+        </div>
+
+        <nav class="admin-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="admin-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius); color: var(--gray-light); text-decoration: none; margin-bottom: 8px; transition: var(--transition);">
+                <span>📊</span> Dashboard
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="admin-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius); color: var(--gray-light); text-decoration: none; margin-bottom: 8px; transition: var(--transition);">
+                <span>📦</span> Products
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="admin-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius); color: var(--gray-light); text-decoration: none; margin-bottom: 8px; transition: var(--transition);">
+                <span>🛒</span> Orders
+            </a>
+            <a href="{{ url_for('admin_users') }}" class="admin-nav-item active" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius); color: var(--gray-light); text-decoration: none; margin-bottom: 8px; transition: var(--transition);">
+                <span>👥</span> Users
+            </a>
+            <a href="{{ url_for('admin_shipping') }}" class="admin-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius); color: var(--gray-light); text-decoration: none; margin-bottom: 8px; transition: var(--transition);">
+                <span>🚚</span> Shipping
+            </a>
+        </nav>
+
+        <div style="margin-top: auto; padding-top: 24px; border-top: 1px solid var(--dark-light);">
+            <a href="/" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius); color: var(--gray-light); text-decoration: none; margin-bottom: 8px; transition: var(--transition);">
+                <span>🏪</span> View Store
+            </a>
+            <a href="{{ url_for('logout') }}" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius); color: var(--danger); text-decoration: none; transition: var(--transition);">
+                <span>🚪</span> Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-content" style="flex: 1; margin-left: 280px; padding: 32px; background: var(--light);">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" style="padding: 16px 20px; border-radius: var(--radius); margin-bottom: 24px; background: {{ '#dcfce7' if category == 'success' else '#fee2e2' if category == 'danger' else '#dbeafe' }}; color: {{ '#166534' if category == 'success' else '#991b1b' if category == 'danger' else '#1e40af' }};">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="admin-header" style="margin-bottom: 32px;">
+            <h1 style="font-size: 2rem; font-weight: 800; color: var(--dark); margin-bottom: 8px;">Users</h1>
+            <p style="color: var(--gray);">Manage customer accounts</p>
+        </div>
+
+        <div class="users-table" style="background: var(--white); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow); overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--light);">
+                        <th style="padding: 12px; text-align: left; color: var(--gray); font-weight: 600; font-size: 0.85rem;">User</th>
+                        <th style="padding: 12px; text-align: left; color: var(--gray); font-weight: 600; font-size: 0.85rem;">Username</th>
+                        <th style="padding: 12px; text-align: left; color: var(--gray); font-weight: 600; font-size: 0.85rem;">Role</th>
+                        <th style="padding: 12px; text-align: left; color: var(--gray); font-weight: 600; font-size: 0.85rem;">Status</th>
+                        <th style="padding: 12px; text-align: left; color: var(--gray); font-weight: 600; font-size: 0.85rem;">Joined</th>
+                        <th style="padding: 12px; text-align: left; color: var(--gray); font-weight: 600; font-size: 0.85rem;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr style="border-bottom: 1px solid var(--light);">
+                        <td style="padding: 16px 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--gradient); display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: 700; font-size: 1rem;">
+                                    {{ user.first_name[0] if user.first_name else user.username[0] }}{{ user.last_name[0] if user.last_name else '' }}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--dark);">{{ user.get_full_name() }}</div>
+                                    <div style="font-size: 0.85rem; color: var(--gray);">{{ user.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="padding: 16px 12px; color: var(--gray);">{{ user.username }}</td>
+                        <td style="padding: 16px 12px;">
+                            {% if user.is_admin %}
+                                <span style="display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">👑 Admin</span>
+                            {% else %}
+                                <span style="display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; background: rgba(99, 102, 241, 0.1); color: var(--primary);">👤 Customer</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 16px 12px;">
+                            <span style="display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; background: {{ '#dcfce7' if user.is_active else '#fee2e2' }}; color: {{ '#166534' if user.is_active else '#991b1b' }};">
+                                {{ 'Active' if user.is_active else 'Inactive' }}
+                            </span>
+                        </td>
+                        <td style="padding: 16px 12px; color: var(--gray);">{{ user.created_at.strftime('%d %b %Y') }}</td>
+                        <td style="padding: 16px 12px;">
+                            {% if user.id != current_user.id %}
+                                <form action="{{ url_for('admin_toggle_user_status', user_id=user.id) }}" method="POST" style="display: inline;">
+                                    <button type="submit" style="padding: 8px 16px; border-radius: 8px; background: {{ 'rgba(239, 68, 68, 0.1)' if user.is_active else 'rgba(34, 197, 94, 0.1)' }}; color: {{ 'var(--danger)' if user.is_active else 'var(--success)' }}; border: none; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: var(--transition);">
+                                        {{ 'Deactivate' if user.is_active else 'Activate' }}
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span style="color: var(--gray); font-size: 0.85rem;">Your account</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<style>
+.admin-nav-item:hover,
+.admin-nav-item.active {
+    background: var(--dark-light);
+    color: var(--white) !important;
+}
+</style>
+{% endblock %}

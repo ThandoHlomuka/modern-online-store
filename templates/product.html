@@ -6,54 +6,82 @@
 <section class="product-detail">
     <div class="container">
         <div class="product-detail-grid">
+            <!-- Product Image -->
             <div class="product-detail-image">
                 <img src="{{ product.image }}" alt="{{ product.name }}">
             </div>
-            
+
+            <!-- Product Info -->
             <div class="product-detail-info">
                 <span class="product-detail-category">{{ product.category }}</span>
                 <h1 class="product-detail-title">{{ product.name }}</h1>
-                
+
                 <div class="product-detail-rating">
                     <div class="stars">
                         {% for i in range(5) %}
-                            {% if i < product.rating|int %}★{% else %}☆{% endif %}
+                            {% if i < product.rating|int %}⭐{% else %}☆{% endif %}
                         {% endfor %}
                     </div>
-                    <span>{{ product.rating }} out of 5</span>
-                    <span>({{ product.reviews }} reviews)</span>
+                    <span style="color: var(--gray);">{{ product.reviews_count }} reviews</span>
                 </div>
-                
-                <div class="product-detail-price">${{ product.price }}</div>
-                
+
+                <div class="product-detail-price">R{{ "%.2f"|format(product.price) }}</div>
+
                 <p class="product-detail-description">{{ product.description }}</p>
-                
-                <div class="product-detail-actions">
-                    <button class="btn btn-gradient btn-lg add-to-cart-btn" data-product-id="{{ product.id }}" style="flex: 1;">
+
+                <div style="margin-bottom: 32px;">
+                    <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                        <span style="display: inline-block; padding: 6px 14px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; background: {{ '#dcfce7' if product.stock_quantity > 0 else '#fee2e2' }}; color: {{ '#166534' if product.stock_quantity > 0 else '#991b1b' }};">
+                            {{ '✅ In Stock' if product.stock_quantity > 0 else '❌ Out of Stock' }}
+                        </span>
+                        {% if product.is_featured %}
+                        <span style="display: inline-block; padding: 6px 14px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; background: var(--warning); color: var(--white);">
+                            ⭐ Featured
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if product.stock_quantity > 0 %}
+                <div class="product-detail-actions" style="display: flex; gap: 16px; margin-bottom: 40px;">
+                    <button class="btn btn-gradient btn-lg add-to-cart-btn" data-product-id="{{ product.id }}" style="flex: 1; justify-content: center;">
                         🛒 Add to Cart
                     </button>
-                    <button class="btn btn-secondary btn-lg" style="background: var(--light); color: var(--dark);">
-                        ♡
+                    <button class="btn btn-lg" style="background: var(--white); border: 2px solid var(--light);">
+                        ❤️
                     </button>
                 </div>
-                
+                {% endif %}
+
+                <!-- Product Meta -->
                 <div class="product-meta">
                     <div class="meta-item">
-                        <span class="meta-label">Availability</span>
-                        <span class="meta-value" style="color: var(--success);">In Stock</span>
+                        <span class="meta-label">SKU</span>
+                        <span class="meta-value">{{ product.id }}-{{ product.category[:3].upper() }}</span>
                     </div>
                     <div class="meta-item">
-                        <span class="meta-label">SKU</span>
-                        <span class="meta-value">PROD-{{ product.id }}-{{ product.category[:3].upper() }}</span>
+                        <span class="meta-label">Category</span>
+                        <span class="meta-value">{{ product.category }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Weight</span>
+                        <span class="meta-value">{{ product.weight_kg }} kg</span>
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">Shipping</span>
-                        <span class="meta-value">Free on orders $100+</span>
+                        <span class="meta-value">Calculated at checkout</span>
                     </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Returns</span>
-                        <span class="meta-value">30-day policy</span>
-                    </div>
+                </div>
+
+                <!-- Shipping Info -->
+                <div style="margin-top: 32px; padding: 24px; background: rgba(99, 102, 241, 0.05); border-radius: var(--radius); border-left: 4px solid var(--primary);">
+                    <h3 style="font-weight: 700; margin-bottom: 12px; color: var(--dark);">🚚 Shipping Information</h3>
+                    <ul style="color: var(--gray); line-height: 1.8; margin-left: 20px;">
+                        <li>Free shipping on orders over R500</li>
+                        <li>Same-day dispatch for orders before 2pm</li>
+                        <li>Bobgo Pudo pickup points available</li>
+                        <li>International shipping available</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -61,36 +89,36 @@
 </section>
 
 <!-- Related Products -->
-{% if related_products %}
-<section style="background: var(--white);">
+<section style="background: var(--light);">
     <div class="container">
         <div class="section-header">
-            <span class="section-tag">Related</span>
-            <h2 class="section-title">You May Also Like</h2>
+            <span class="section-tag">💡 You May Also Like</span>
+            <h2 class="section-title">Related Products</h2>
         </div>
-        
+
         <div class="products-grid">
             {% for product in related_products %}
             <div class="product-card">
                 <div class="product-image">
-                    <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy">
+                    <img src="{{ product.image }}" alt="{{ product.name }}">
                     <div class="product-actions">
-                        <button class="action-btn" title="Add to wishlist">♡</button>
-                        <a href="/product/{{ product.id }}" class="action-btn" title="Quick view">👁</a>
+                        <button class="action-btn" title="Quick View" onclick="window.location.href='/product/{{ product.id }}'">👁️</button>
+                        <button class="action-btn" title="Add to Wishlist">❤️</button>
                     </div>
                 </div>
                 <div class="product-info">
                     <span class="product-category">{{ product.category }}</span>
                     <h3 class="product-name">{{ product.name }}</h3>
-                    <p class="product-description">{{ product.description }}</p>
+                    <p class="product-description">{{ product.description[:80] }}...</p>
                     <div class="product-footer">
-                        <span class="product-price">${{ product.price }}</span>
+                        <span class="product-price">R{{ "%.2f"|format(product.price) }}</span>
                         <div class="product-rating">
-                            ★ {{ product.rating }}
-                            <span>({{ product.reviews }})</span>
+                            <span>⭐</span>
+                            <span>{{ product.rating }}</span>
+                            <span>({{ product.reviews_count }})</span>
                         </div>
                     </div>
-                    <button class="btn btn-gradient btn-block mt-4 add-to-cart-btn" data-product-id="{{ product.id }}">
+                    <button class="btn btn-gradient btn-block add-to-cart-btn" data-product-id="{{ product.id }}" style="margin-top: 16px;">
                         🛒 Add to Cart
                     </button>
                 </div>
@@ -99,5 +127,4 @@
         </div>
     </div>
 </section>
-{% endif %}
 {% endblock %}

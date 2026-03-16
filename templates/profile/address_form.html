@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="profile-page" style="min-height: 100vh; padding-top: 100px; padding-bottom: 60px; background: var(--light);">
+    <div class="container">
+        <div style="display: grid; grid-template-columns: 300px 1fr; gap: 32px; max-width: 1200px; margin: 0 auto;">
+            <!-- Sidebar -->
+            <aside style="background: var(--white); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow); height: fit-content;">
+                <nav class="profile-nav" style="display: flex; flex-direction: column; gap: 8px;">
+                    <a href="{{ url_for('profile') }}" class="profile-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--gray); text-decoration: none; font-weight: 500; transition: var(--transition);">
+                        <span>👤</span> Profile Overview
+                    </a>
+                    <a href="{{ url_for('edit_profile') }}" class="profile-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--gray); text-decoration: none; font-weight: 500; transition: var(--transition);">
+                        <span>✏️</span> Edit Profile
+                    </a>
+                    <a href="{{ url_for('addresses') }}" class="profile-nav-item active" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--primary); background: rgba(99, 102, 241, 0.1); text-decoration: none; font-weight: 600; transition: var(--transition);">
+                        <span>📍</span> Addresses
+                    </a>
+                    <a href="{{ url_for('orders') }}" class="profile-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--gray); text-decoration: none; font-weight: 500; transition: var(--transition);">
+                        <span>📦</span> My Orders
+                    </a>
+                </nav>
+                <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--light);">
+                    <a href="/" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--gray); text-decoration: none; font-weight: 500; transition: var(--transition);">
+                        <span>🏪</span> Back to Store
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main style="background: var(--white); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow);">
+                <h1 style="font-size: 2rem; font-weight: 800; color: var(--dark); margin-bottom: 8px;">{{ title }}</h1>
+                <p style="color: var(--gray); margin-bottom: 32px;">Fill in the address details below</p>
+
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="address_type" style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--dark);">Address Type</label>
+                        {{ form.address_type(class="form-control") }}
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="street_address" style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--dark);">Street Address</label>
+                        {{ form.street_address(class="form-control", placeholder="123 Main Street") }}
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="address_line2" style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--dark);">Address Line 2 (Optional)</label>
+                        {{ form.address_line2(class="form-control", placeholder="Apartment, suite, unit, etc.") }}
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label for="city" style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--dark);">City</label>
+                            {{ form.city(class="form-control", placeholder="Johannesburg") }}
+                        </div>
+                        <div class="form-group">
+                            <label for="province" style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--dark);">Province/State</label>
+                            {{ form.province(class="form-control", placeholder="Gauteng") }}
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label for="postal_code" style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--dark);">Postal Code</label>
+                            {{ form.postal_code(class="form-control", placeholder="2000") }}
+                        </div>
+                        <div class="form-group">
+                            <label for="country" style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--dark);">Country</label>
+                            {{ form.country(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="phone" style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--dark);">Phone Number</label>
+                        {{ form.phone(class="form-control", placeholder="+27 12 345 6789") }}
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 24px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            {{ form.is_default() }}
+                            <label for="is_default" style="margin: 0; cursor: pointer; font-weight: 500;">Set as default {{ form.address_type.data }} address</label>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px;">
+                        {{ form.submit(class="btn btn-gradient", style="padding: 14px 32px; border-radius: 50px; border: none; font-weight: 600; cursor: pointer;") }}
+                        <a href="{{ url_for('addresses') }}" class="btn" style="padding: 14px 32px; border-radius: 50px; background: var(--light); color: var(--dark); text-decoration: none; font-weight: 600;">Cancel</a>
+                    </div>
+                </form>
+            </main>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-control {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid var(--light);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    transition: var(--transition);
+    font-family: inherit;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.profile-nav-item:hover {
+    background: var(--light);
+    color: var(--dark);
+}
+</style>
+{% endblock %}

@@ -47,9 +47,11 @@ modern-online-store/
 ├── requirements.txt            # Python dependencies
 ├── vercel.json                 # Vercel configuration
 ├── supabase-schema.sql         # Database schema
+├── .env                        # Environment variables
 ├── .env.example                # Environment variables template
 ├── .gitignore
 ├── README.md
+├── DEPLOYMENT.md               # Detailed deployment guide
 ├── api/
 │   └── index.py                # Vercel serverless entry
 ├── static/
@@ -65,6 +67,7 @@ modern-online-store/
     ├── product.html
     ├── cart.html
     ├── checkout.html
+    ├── 403.html, 404.html, 500.html
     ├── auth/
     │   ├── login.html
     │   └── register.html
@@ -72,12 +75,18 @@ modern-online-store/
     │   ├── profile.html
     │   ├── edit_profile.html
     │   ├── addresses.html
-    │   └── orders.html
+    │   ├── orders.html
+    │   ├── order_detail.html
+    │   ├── change_password.html
+    │   └── address_form.html
     └── admin/
         ├── dashboard.html
         ├── products.html
+        ├── product_form.html
         ├── orders.html
-        └── users.html
+        ├── order_detail.html
+        ├── users.html
+        └── shipping.html
 ```
 
 ## 🚀 Quick Start
@@ -89,7 +98,7 @@ modern-online-store/
 
 ### Local Development
 
-1. **Clone the repository:**
+1. **Clone/navigate to the project:**
    ```bash
    cd Desktop/modern-online-store
    ```
@@ -157,38 +166,13 @@ modern-online-store/
 
 ## 🌐 Deploy to Vercel
 
-### Step 1: Push to GitHub
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/ThandoHlomuka/modern-online-store.git
-git branch -M main
-git push -u origin main
-```
+See **DEPLOYMENT.md** for detailed step-by-step deployment instructions.
 
-### Step 2: Deploy on Vercel
-1. Go to [vercel.com](https://vercel.com)
-2. Click "Add New Project"
-3. Import GitHub repository
-4. Configure environment variables:
-   - `SECRET_KEY` - Random string
-   - `SUPABASE_URL` - From Supabase
-   - `SUPABASE_KEY` - From Supabase
-   - `SUPABASE_DB_URL` - From Supabase
-   - `BOBGO_API_KEY` - From Bobgo (optional)
-
-5. Click "Deploy"
-
-### Step 3: Set Environment Variables in Vercel
-In Vercel dashboard > Project Settings > Environment Variables:
-```
-SECRET_KEY=your-random-secret-key
-SUPABASE_URL=https://xxx.supabase.co
-SUPABASE_KEY=your-anon-key
-SUPABASE_DB_URL=postgresql://...
-BOBGO_API_KEY=your-bobgo-key
-```
+### Quick Deploy
+1. Push to GitHub
+2. Import project in Vercel
+3. Set environment variables
+4. Deploy!
 
 ## 💱 Currency Support
 
@@ -215,18 +199,18 @@ Primary shipping provider for South Africa.
 2. Add to .env: `BOBGO_API_KEY=your-key`
 
 ### Shipping Zones
-- Gauteng (1-2 days)
-- Western Cape (2-3 days)
-- KwaZulu-Natal (2-3 days)
-- Other South Africa (3-5 days)
-- Southern Africa SADC (5-10 days)
-- International (7-21 days)
+- Gauteng (1-2 days) - R65 base
+- Western Cape (2-3 days) - R85 base
+- KwaZulu-Natal (2-3 days) - R80 base
+- Other South Africa (3-5 days) - R95 base
+- Southern Africa SADC (5-10 days) - R250 base
+- International (7-21 days) - R450 base
 
 ### Shipping Methods
-- Standard Shipping (5-7 days)
-- Express Shipping (2-3 days)
-- Overnight Delivery (next day)
-- Bobgo Pudo Pickup
+- Standard Shipping (5-7 days) - 1.0x multiplier
+- Express Shipping (2-3 days) - 1.5x multiplier
+- Overnight Delivery (next day) - 2.5x multiplier
+- Bobgo Pudo Pickup - 0.7x multiplier
 
 ## 👤 Admin Access
 
@@ -234,53 +218,67 @@ Primary shipping provider for South Africa.
 - Username: `ThandoHlomuka`
 - Password: `Nozibusiso89`
 
+**⚠️ IMPORTANT:** Change the admin password after first login!
+
 **Access:** `http://localhost:5000/admin`
 
 ## 📝 API Endpoints
 
 ### Public
-- `GET /` - Home page
-- `GET /shop` - Product listing
-- `GET /product/<id>` - Product detail
-- `GET /cart` - Shopping cart
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Home page |
+| GET | `/shop` | Product listing |
+| GET | `/product/<id>` | Product detail |
+| GET | `/cart` | Shopping cart |
 
 ### Authentication
-- `GET/POST /login` - User login
-- `GET/POST /register` - User registration
-- `GET /logout` - User logout
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET/POST | `/login` | User login |
+| GET/POST | `/register` | User registration |
+| GET | `/logout` | User logout |
 
 ### Profile (Requires Login)
-- `GET /profile` - Profile overview
-- `GET/POST /profile/edit` - Edit profile
-- `POST /profile/upload-avatar` - Upload avatar
-- `GET/POST /profile/change-password` - Change password
-- `GET /profile/addresses` - Manage addresses
-- `GET /profile/orders` - Order history
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/profile` | Profile overview |
+| GET/POST | `/profile/edit` | Edit profile |
+| POST | `/profile/upload-avatar` | Upload avatar |
+| GET/POST | `/profile/change-password` | Change password |
+| GET | `/profile/addresses` | Manage addresses |
+| GET | `/profile/orders` | Order history |
 
 ### Checkout (Requires Login)
-- `GET /checkout` - Checkout page
-- `POST /api/checkout` - Process order
-- `POST /api/shipping/calculate` - Calculate shipping
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/checkout` | Checkout page |
+| POST | `/api/checkout` | Process order |
+| POST | `/api/shipping/calculate` | Calculate shipping |
 
 ### Admin (Requires Admin)
-- `GET /admin` - Dashboard
-- `GET /admin/products` - Product management
-- `GET/POST /admin/products/add` - Add product
-- `GET /admin/orders` - Order management
-- `GET /admin/users` - User management
-- `GET /admin/shipping` - Shipping configuration
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/admin` | Dashboard |
+| GET | `/admin/products` | Product management |
+| GET/POST | `/admin/products/add` | Add product |
+| GET | `/admin/orders` | Order management |
+| GET | `/admin/users` | User management |
+| GET | `/admin/shipping` | Shipping configuration |
 
 ### API
-- `GET /api/cart` - Get cart
-- `POST /api/cart/add` - Add to cart
-- `POST /api/cart/update` - Update quantity
-- `POST /api/cart/remove` - Remove item
-- `POST /api/set-currency` - Set currency
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/cart` | Get cart |
+| POST | `/api/cart/add` | Add to cart |
+| POST | `/api/cart/update` | Update quantity |
+| POST | `/api/cart/remove` | Remove item |
+| POST | `/api/set-currency` | Set currency |
 
 ## 🔧 Configuration
 
 ### Environment Variables
-See `.env.example` for all available options.
+See `.env` or `.env.example` for all available options.
 
 **Required:**
 - `SECRET_KEY` - Flask secret key
@@ -314,7 +312,7 @@ MIT License - See LICENSE file for details.
 ## 🤝 Support
 
 For issues or questions:
-1. Check documentation
+1. Check DEPLOYMENT.md for deployment help
 2. Review Supabase schema
 3. Verify environment variables
 

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+<div class="profile-page" style="min-height: 100vh; padding-top: 100px; padding-bottom: 60px; background: var(--light);">
+    <div class="container">
+        <div style="display: grid; grid-template-columns: 300px 1fr; gap: 32px; max-width: 1200px; margin: 0 auto;">
+            <!-- Sidebar -->
+            <aside style="background: var(--white); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow); height: fit-content;">
+                <nav class="profile-nav" style="display: flex; flex-direction: column; gap: 8px;">
+                    <a href="{{ url_for('profile') }}" class="profile-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--gray); text-decoration: none; font-weight: 500; transition: var(--transition);">
+                        <span>👤</span> Profile Overview
+                    </a>
+                    <a href="{{ url_for('edit_profile') }}" class="profile-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--gray); text-decoration: none; font-weight: 500; transition: var(--transition);">
+                        <span>✏️</span> Edit Profile
+                    </a>
+                    <a href="{{ url_for('addresses') }}" class="profile-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--gray); text-decoration: none; font-weight: 500; transition: var(--transition);">
+                        <span>📍</span> Addresses
+                    </a>
+                    <a href="{{ url_for('orders') }}" class="profile-nav-item active" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--primary); background: rgba(99, 102, 241, 0.1); text-decoration: none; font-weight: 600; transition: var(--transition);">
+                        <span>📦</span> My Orders
+                    </a>
+                    <a href="{{ url_for('change_password') }}" class="profile-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--gray); text-decoration: none; font-weight: 500; transition: var(--transition);">
+                        <span>🔒</span> Change Password
+                    </a>
+                </nav>
+                <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--light);">
+                    <a href="/" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--gray); text-decoration: none; font-weight: 500; transition: var(--transition);">
+                        <span>🏪</span> Back to Store
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main>
+                <h1 style="font-size: 2rem; font-weight: 800; color: var(--dark); margin-bottom: 8px;">My Orders</h1>
+                <p style="color: var(--gray); margin-bottom: 32px;">Track and manage your orders</p>
+
+                {% if orders %}
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        {% for order in orders %}
+                        <a href="{{ url_for('order_detail', order_number=order.order_number) }}" style="display: grid; grid-template-columns: 200px 1fr 150px 150px; gap: 24px; align-items: center; padding: 24px; background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow); text-decoration: none; transition: var(--transition);">
+                            <div style="text-align: center;">
+                                <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 4px;">Order</p>
+                                <p style="font-weight: 700; color: var(--dark); font-size: 0.9rem;">{{ order.order_number[-8:] }}</p>
+                            </div>
+                            <div>
+                                <p style="font-weight: 600; color: var(--dark); margin-bottom: 4px;">{{ order.shipping_name }}</p>
+                                <p style="color: var(--gray); font-size: 0.9rem;">{{ order.items|length }} items • {{ order.created_at.strftime('%d %B %Y') }}</p>
+                            </div>
+                            <div>
+                                <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 4px;">Total</p>
+                                <p style="font-weight: 700; color: var(--primary); font-size: 1.1rem;">R{{ "%.2f"|format(order.total_amount) }}</p>
+                            </div>
+                            <div>
+                                <span style="display: inline-block; padding: 6px 16px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; background: {{ '#dbeafe' if order.status == 'pending' else '#dcfce7' if order.status == 'delivered' else '#fef3c7' if order.status == 'processing' else '#fee2e2' if order.status == 'shipped' else '#f3e8ff' }}; color: {{ '#1e40af' if order.status == 'pending' else '#166534' if order.status == 'delivered' else '#92400e' if order.status == 'processing' else '#6b7280' if order.status == 'shipped' else '#6b21a8' }};">
+                                    {{ order.status }}
+                                </span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div style="background: var(--white); border-radius: var(--radius-lg); padding: 60px 40px; text-align: center; box-shadow: var(--shadow);">
+                        <div style="font-size: 5rem; margin-bottom: 24px;">📦</div>
+                        <h3 style="font-weight: 700; color: var(--dark); margin-bottom: 12px;">No orders yet</h3>
+                        <p style="color: var(--gray); margin-bottom: 24px;">Start shopping to see your orders here!</p>
+                        <a href="/shop" class="btn btn-gradient" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 50px; background: var(--gradient); color: var(--white); border: none; font-weight: 600; cursor: pointer; text-decoration: none;">
+                            🛒 Start Shopping
+                        </a>
+                    </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-nav-item:hover {
+    background: var(--light);
+    color: var(--dark);
+}
+</style>
+{% endblock %}

@@ -244,24 +244,97 @@ INSERT INTO products (name, description, price, category, image, rating, reviews
 -- Run this in Supabase Dashboard > Storage to create the avatars bucket
 -- Or use the SQL editor with storage schema:
 
--- CREATE STORAGE BUCKET 'avatars' WITH (public = true, file_size_limit = 5242880);
+-- Create the avatars storage bucket
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('avatars', 'avatars', true, 5242880, ARRAY['image/png', 'image/jpeg', 'image/gif', 'image/webp'])
+ON CONFLICT (id) DO NOTHING;
 
--- Enable Row Level Security for avatars bucket
--- ALTER STORAGE BUCKET avatars SET (public = true);
+-- Enable Row Level Security for storage objects
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
 
 -- Create policy for users to upload their own avatars
--- CREATE POLICY "Users can upload own avatar"
--- ON storage.objects FOR INSERT
--- WITH CHECK (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+CREATE POLICY "Users can upload own avatar"
+ON storage.objects FOR INSERT
+WITH CHECK (
+    bucket_id = 'avatars' 
+    AND (storage.foldername(name))[1] = 'user_' || auth.uid()::text
+);
 
--- CREATE POLICY "Users can update own avatar"
--- ON storage.objects FOR UPDATE
--- USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+-- Create policy for users to update their own avatar
+CREATE POLICY "Users can update own avatar"
+ON storage.objects FOR UPDATE
+USING (
+    bucket_id = 'avatars' 
+    AND (storage.foldername(name))[1] = 'user_' || auth.uid()::text
+);
 
--- CREATE POLICY "Users can delete own avatar"
--- ON storage.objects FOR DELETE
--- USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+-- Create policy for users to delete their own avatar
+CREATE POLICY "Users can delete own avatar"
+ON storage.objects FOR DELETE
+USING (
+    bucket_id = 'avatars' 
+    AND (storage.foldername(name))[1] = 'user_' || auth.uid()::text
+);
 
--- CREATE POLICY "Public can view avatars"
--- ON storage.objects FOR SELECT
--- USING (bucket_id = 'avatars');
+-- Create policy for public to view all avatars
+CREATE POLICY "Public can view avatars"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'avatars');
+
+-- Create policy for authenticated users to list avatars
+CREATE POLICY "Authenticated users can list avatars"
+ON storage.objects FOR SELECT
+TO authenticated
+USING (bucket_id = 'avatars');
+
+-- ==================== ADDITIONAL SAMPLE PRODUCTS ====================
+-- More products for a fuller store
+
+INSERT INTO products (name, description, price, category, image, rating, reviews_count, stock_quantity, weight_kg, is_featured, is_active) VALUES
+('Wireless Earbuds Pro', 'True wireless earbuds with active noise cancellation and 30-hour battery life', 1899.00, 'Electronics', 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400', 4.7, 423, 75, 0.15, TRUE, TRUE),
+('Canvas Tote Bag', 'Eco-friendly canvas tote bag perfect for daily use', 399.00, 'Bags', 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=400', 4.4, 156, 200, 0.4, FALSE, TRUE),
+('Smart Fitness Tracker', 'Advanced fitness tracker with heart rate monitor and GPS', 2499.00, 'Electronics', 'https://images.unsplash.com/photo-1575311373947-33761188c879?w=400', 4.6, 289, 60, 0.08, FALSE, TRUE),
+('Classic Leather Wallet', 'Genuine leather wallet with RFID protection', 799.00, 'Accessories', 'https://images.unsplash.com/photo-1627123424574-18bd08331092?w=400', 4.8, 312, 120, 0.2, FALSE, TRUE),
+('Yoga Mat Premium', 'Non-slip yoga mat with alignment lines, 6mm thick', 599.00, 'Other', 'https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=400', 4.5, 178, 90, 1.8, FALSE, TRUE),
+('Stainless Steel Water Bottle', 'Insulated water bottle keeps drinks cold for 24h or hot for 12h', 349.00, 'Other', 'https://images.unsplash.com/photo-1602143407151-011141951e7a?w=400', 4.7, 534, 150, 0.35, FALSE, TRUE),
+('Bluetooth Portable Speaker', 'Waterproof portable speaker with 360° sound', 1299.00, 'Electronics', 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400', 4.6, 267, 80, 0.6, TRUE, TRUE),
+('Denim Jacket Classic', 'Timeless denim jacket with modern fit', 1599.00, 'Clothing', 'https://images.unsplash.com/photo-1576995853123-5a297da4030e?w=400', 4.5, 198, 45, 0.9, FALSE, TRUE),
+('Ceramic Coffee Mug Set', 'Set of 4 handcrafted ceramic mugs', 499.00, 'Home', 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=400', 4.8, 145, 100, 1.2, FALSE, TRUE),
+('USB-C Hub Multi-Port', '7-in-1 USB-C hub with HDMI, USB 3.0, and SD card reader', 899.00, 'Electronics', 'https://images.unsplash.com/photo-1625842268584-8f3296236761?w=400', 4.4, 234, 70, 0.15, FALSE, TRUE),
+('Scented Candle Collection', 'Set of 3 natural soy wax candles with essential oils', 449.00, 'Home', 'https://images.unsplash.com/photo-1602166556128-20c5e5f18760?w=400', 4.7, 167, 85, 0.8, FALSE, TRUE),
+('Phone Stand Adjustable', 'Aluminum phone stand compatible with all smartphones', 249.00, 'Accessories', 'https://images.unsplash.com/photo-1586953229609-75f347c54710?w=400', 4.3, 89, 200, 0.25, FALSE, TRUE);
+
+-- ==================== INDEXES FOR PERFORMANCE ====================
+-- Additional indexes for better query performance
+
+CREATE INDEX IF NOT EXISTS idx_products_featured ON products(is_featured);
+CREATE INDEX IF NOT EXISTS idx_products_price ON products(price);
+CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_orders_payment_status ON orders(payment_status);
+CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_shipping_zones_active ON shipping_zones(is_active);
+CREATE INDEX IF NOT EXISTS idx_shipping_methods_active ON shipping_methods(is_active);
+
+-- ==================== HELPER FUNCTIONS ====================
+
+-- Function to update the updated_at timestamp
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Apply updated_at trigger to tables
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_shipping_zones_updated_at BEFORE UPDATE ON shipping_zones
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

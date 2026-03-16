@@ -7,16 +7,12 @@
 <section class="hero">
     <div class="container">
         <div class="hero-content">
-            <span class="hero-badge">✨ New Collection 2024</span>
-            <h1>Discover Premium Products for Modern Living</h1>
-            <p>Explore our curated collection of high-quality products designed to elevate your everyday experience. Style meets functionality.</p>
+            <span class="hero-badge">🇿🇦 South Africa's Premium Online Store</span>
+            <h1>Discover Quality Products at Unbeatable Prices</h1>
+            <p>Shop the latest trends in electronics, accessories, fashion and more. Free shipping on orders over R500. Secure checkout with multiple payment options.</p>
             <div class="hero-buttons">
-                <a href="/shop" class="btn btn-primary btn-lg">
-                    Shop Now →
-                </a>
-                <a href="#featured" class="btn btn-secondary btn-lg">
-                    View Collection
-                </a>
+                <a href="/shop" class="btn btn-primary btn-lg">🛒 Shop Now</a>
+                <a href="#featured" class="btn btn-secondary btn-lg">View Featured</a>
             </div>
         </div>
     </div>
@@ -26,41 +22,45 @@
 <section id="featured">
     <div class="container">
         <div class="section-header">
-            <span class="section-tag">Featured</span>
-            <h2 class="section-title">Trending Products</h2>
-            <p class="section-subtitle">Handpicked selections from our most popular items</p>
+            <span class="section-tag">✨ Special Selection</span>
+            <h2 class="section-title">Featured Products</h2>
+            <p class="section-subtitle">Handpicked premium products just for you</p>
         </div>
-        
+
         <div class="products-grid">
             {% for product in products %}
-            <div class="product-card fade-in" style="animation-delay: {{ loop.index * 0.1 }}s">
+            <div class="product-card">
                 <div class="product-image">
-                    <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy">
-                    {% if loop.index <= 2 %}
-                    <span class="product-badge">Hot</span>
+                    <img src="{{ product.image }}" alt="{{ product.name }}">
+                    {% if product.is_featured %}
+                    <span class="product-badge">⭐ Featured</span>
                     {% endif %}
                     <div class="product-actions">
-                        <button class="action-btn" title="Add to wishlist">♡</button>
-                        <button class="action-btn" title="Quick view">👁</button>
+                        <button class="action-btn" title="Quick View">👁️</button>
+                        <button class="action-btn" title="Add to Wishlist">❤️</button>
                     </div>
                 </div>
                 <div class="product-info">
                     <span class="product-category">{{ product.category }}</span>
                     <h3 class="product-name">{{ product.name }}</h3>
-                    <p class="product-description">{{ product.description }}</p>
+                    <p class="product-description">{{ product.description[:80] }}...</p>
                     <div class="product-footer">
-                        <span class="product-price">${{ product.price }}</span>
+                        <span class="product-price">R{{ "%.2f"|format(product.price) }}</span>
                         <div class="product-rating">
-                            ★ {{ product.rating }}
-                            <span>({{ product.reviews }})</span>
+                            <span>⭐</span>
+                            <span>{{ product.rating }}</span>
+                            <span>({{ product.reviews_count }})</span>
                         </div>
                     </div>
+                    <button class="btn btn-gradient btn-block add-to-cart-btn" data-product-id="{{ product.id }}" style="margin-top: 16px;">
+                        🛒 Add to Cart
+                    </button>
                 </div>
             </div>
             {% endfor %}
         </div>
-        
-        <div class="text-center mt-4">
+
+        <div style="text-align: center; margin-top: 48px;">
             <a href="/shop" class="btn btn-gradient btn-lg">View All Products →</a>
         </div>
     </div>
@@ -70,50 +70,64 @@
 <section class="features">
     <div class="container">
         <div class="section-header">
-            <span class="section-tag">Why Choose Us</span>
-            <h2 class="section-title">The ModernStore Difference</h2>
-            <p class="section-subtitle">We're committed to providing the best shopping experience</p>
+            <span class="section-tag">🎯 Why Choose Us</span>
+            <h2 class="section-title">The ModernStore Advantage</h2>
         </div>
-        
+
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">🚚</div>
-                <h3 class="feature-title">Free Shipping</h3>
-                <p class="feature-text">Free shipping on all orders over $100. Fast and reliable delivery worldwide.</p>
+                <h3 class="feature-title">Fast Shipping</h3>
+                <p class="feature-text">Free delivery on orders over R500. Same-day dispatch for orders before 2pm.</p>
             </div>
-            
             <div class="feature-card">
                 <div class="feature-icon">🔒</div>
                 <h3 class="feature-title">Secure Payment</h3>
-                <p class="feature-text">Your payments are protected with industry-leading encryption technology.</p>
+                <p class="feature-text">SSL encrypted checkout. Multiple payment options including card and EFT.</p>
             </div>
-            
             <div class="feature-card">
                 <div class="feature-icon">↩️</div>
                 <h3 class="feature-title">Easy Returns</h3>
-                <p class="feature-text">30-day hassle-free returns. No questions asked, your satisfaction guaranteed.</p>
+                <p class="feature-text">30-day return policy. No questions asked. Your satisfaction guaranteed.</p>
             </div>
-            
             <div class="feature-card">
                 <div class="feature-icon">💬</div>
                 <h3 class="feature-title">24/7 Support</h3>
-                <p class="feature-text">Our dedicated support team is here to help you around the clock.</p>
+                <p class="feature-text">Dedicated customer support team ready to assist you anytime.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Newsletter Section -->
-<section style="background: var(--gradient); padding: 100px 0;">
+<!-- Categories Section -->
+<section style="background: var(--light);">
     <div class="container">
-        <div class="section-header" style="color: var(--white);">
-            <h2 class="section-title" style="color: var(--white);">Stay in the Loop</h2>
-            <p class="section-subtitle" style="color: rgba(255,255,255,0.9);">Subscribe to get special offers, free giveaways, and exclusive deals</p>
+        <div class="section-header">
+            <span class="section-tag">🏷️ Browse By Category</span>
+            <h2 class="section-title">Shop Categories</h2>
         </div>
-        
-        <div style="max-width: 500px; margin: 0 auto; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
-            <input type="email" placeholder="Enter your email" style="flex: 1; min-width: 250px; padding: 16px 24px; border-radius: 50px; border: none; font-size: 1rem; outline: none;">
-            <button class="btn btn-primary" style="white-space: nowrap;">Subscribe</button>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;">
+            <a href="/shop?category=Electronics" class="category-card" style="background: var(--white); padding: 40px 24px; border-radius: var(--radius-lg); text-align: center; text-decoration: none; color: var(--dark); box-shadow: var(--shadow); transition: var(--transition);">
+                <div style="font-size: 3rem; margin-bottom: 16px;">📱</div>
+                <h3 style="font-weight: 700; margin-bottom: 8px;">Electronics</h3>
+                <p style="color: var(--gray); font-size: 0.9rem;">Latest gadgets & tech</p>
+            </a>
+            <a href="/shop?category=Accessories" class="category-card" style="background: var(--white); padding: 40px 24px; border-radius: var(--radius-lg); text-align: center; text-decoration: none; color: var(--dark); box-shadow: var(--shadow); transition: var(--transition);">
+                <div style="font-size: 3rem; margin-bottom: 16px;">⌚</div>
+                <h3 style="font-weight: 700; margin-bottom: 8px;">Accessories</h3>
+                <p style="color: var(--gray); font-size: 0.9rem;">Style essentials</p>
+            </a>
+            <a href="/shop?category=Bags" class="category-card" style="background: var(--white); padding: 40px 24px; border-radius: var(--radius-lg); text-align: center; text-decoration: none; color: var(--dark); box-shadow: var(--shadow); transition: var(--transition);">
+                <div style="font-size: 3rem; margin-bottom: 16px;">🎒</div>
+                <h3 style="font-weight: 700; margin-bottom: 8px;">Bags</h3>
+                <p style="color: var(--gray); font-size: 0.9rem;">Travel & everyday</p>
+            </a>
+            <a href="/shop?category=Footwear" class="category-card" style="background: var(--white); padding: 40px 24px; border-radius: var(--radius-lg); text-align: center; text-decoration: none; color: var(--dark); box-shadow: var(--shadow); transition: var(--transition);">
+                <div style="font-size: 3rem; margin-bottom: 16px;">👟</div>
+                <h3 style="font-weight: 700; margin-bottom: 8px;">Footwear</h3>
+                <p style="color: var(--gray); font-size: 0.9rem;">Comfort meets style</p>
+            </a>
         </div>
     </div>
 </section>

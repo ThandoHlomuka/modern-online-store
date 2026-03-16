@@ -3,7 +3,10 @@
   "builds": [
     {
       "src": "app.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.11"
+      }
     }
   ],
   "routes": [
@@ -18,11 +21,8 @@
   ],
   "env": {
     "FLASK_ENV": "production",
-    "SECRET_KEY": "modern-store-vercel-secret-key-change-in-dashboard-xyz123",
-    "SUPABASE_URL": "https://placeholder.supabase.co",
-    "SUPABASE_KEY": "placeholder-key-update-in-vercel-dashboard",
-    "SUPABASE_DB_URL": "postgresql://placeholder:placeholder@placeholder.supabase.co:5432/postgres",
-    "BOBGO_API_KEY": "placeholder-bobgo-key"
+    "DEBUG": "False",
+    "PYTHON_VERSION": "3.11"
   },
   "outputDirectory": "static"
 }

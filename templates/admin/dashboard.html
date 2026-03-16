@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="admin-layout" style="display: flex; min-height: 100vh; padding-top: 70px;">
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar" style="width: 280px; background: var(--dark); color: var(--white); padding: 24px; position: fixed; height: 100vh; overflow-y: auto;">
+        <div style="margin-bottom: 32px;">
+            <h2 style="font-size: 1.5rem; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;">Admin Panel</h2>
+            <p style="color: var(--gray-light); font-size: 0.9rem;">Welcome, {{ current_user.get_full_name() }}</p>
+        </div>
+
+        <nav class="admin-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="admin-nav-item {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius); color: var(--gray-light); text-decoration: none; margin-bottom: 8px; transition: var(--transition);">
+                <span>📊</span> Dashboard
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="admin-nav-item {% if request.endpoint == 'admin_products' %}active{% endif %}" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius); color: var(--gray-light); text-decoration: none; margin-bottom: 8px; transition: var(--transition);">
+                <span>📦</span> Products
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="admin-nav-item {% if request.endpoint == 'admin_orders' %}active{% endif %}" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius); color: var(--gray-light); text-decoration: none; margin-bottom: 8px; transition: var(--transition);">
+                <span>🛒</span> Orders
+            </a>
+            <a href="{{ url_for('admin_users') }}" class="admin-nav-item {% if request.endpoint == 'admin_users' %}active{% endif %}" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius); color: var(--gray-light); text-decoration: none; margin-bottom: 8px; transition: var(--transition);">
+                <span>👥</span> Users
+            </a>
+            <a href="{{ url_for('admin_shipping') }}" class="admin-nav-item {% if request.endpoint == 'admin_shipping' %}active{% endif %}" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius); color: var(--gray-light); text-decoration: none; margin-bottom: 8px; transition: var(--transition);">
+                <span>🚚</span> Shipping
+            </a>
+        </nav>
+
+        <div style="margin-top: auto; padding-top: 24px; border-top: 1px solid var(--dark-light);">
+            <a href="/" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius); color: var(--gray-light); text-decoration: none; margin-bottom: 8px; transition: var(--transition);">
+                <span>🏪</span> View Store
+            </a>
+            <a href="{{ url_for('logout') }}" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius); color: var(--danger); text-decoration: none; transition: var(--transition);">
+                <span>🚪</span> Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-content" style="flex: 1; margin-left: 280px; padding: 32px; background: var(--light);">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" style="padding: 16px 20px; border-radius: var(--radius); margin-bottom: 24px; background: {{ '#dcfce7' if category == 'success' else '#fee2e2' if category == 'danger' else '#dbeafe' }}; color: {{ '#166534' if category == 'success' else '#991b1b' if category == 'danger' else '#1e40af' }};">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="admin-header" style="margin-bottom: 32px;">
+            <h1 style="font-size: 2rem; font-weight: 800; color: var(--dark); margin-bottom: 8px;">Dashboard</h1>
+            <p style="color: var(--gray);">Overview of your store's performance</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 40px;">
+            <div class="stat-card" style="background: var(--white); padding: 24px; border-radius: var(--radius-lg); box-shadow: var(--shadow);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                    <div>
+                        <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 8px;">Total Users</p>
+                        <h3 style="font-size: 2.5rem; font-weight: 800; color: var(--dark);">{{ total_users }}</h3>
+                    </div>
+                    <div style="width: 50px; height: 50px; background: rgba(99, 102, 241, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">👥</div>
+                </div>
+                <div style="color: var(--success); font-size: 0.85rem; font-weight: 600;">Registered customers</div>
+            </div>
+
+            <div class="stat-card" style="background: var(--white); padding: 24px; border-radius: var(--radius-lg); box-shadow: var(--shadow);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                    <div>
+                        <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 8px;">Total Products</p>
+                        <h3 style="font-size: 2.5rem; font-weight: 800; color: var(--dark);">{{ total_products }}</h3>
+                    </div>
+                    <div style="width: 50px; height: 50px; background: rgba(236, 72, 153, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">📦</div>
+                </div>
+                <div style="color: var(--primary); font-size: 0.85rem; font-weight: 600;">Active listings</div>
+            </div>
+
+            <div class="stat-card" style="background: var(--white); padding: 24px; border-radius: var(--radius-lg); box-shadow: var(--shadow);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                    <div>
+                        <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 8px;">Total Orders</p>
+                        <h3 style="font-size: 2.5rem; font-weight: 800; color: var(--dark);">{{ total_orders }}</h3>
+                    </div>
+                    <div style="width: 50px; height: 50px; background: rgba(20, 184, 166, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🛒</div>
+                </div>
+                <div style="color: {{ 'var(--warning)' if pending_orders > 0 else 'var(--success)' }}; font-size: 0.85rem; font-weight: 600;">
+                    {% if pending_orders > 0 %}
+                        {{ pending_orders }} pending orders
+                    {% else %}
+                        All orders processed
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="stat-card" style="background: var(--white); padding: 24px; border-radius: var(--radius-lg); box-shadow: var(--shadow);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                    <div>
+                        <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 8px;">Total Revenue</p>
+                        <h3 style="font-size: 2.5rem; font-weight: 800; color: var(--dark);">R{{ "%.2f"|format(total_revenue) }}</h3>
+                    </div>
+                    <div style="width: 50px; height: 50px; background: rgba(34, 197, 94, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">💰</div>
+                </div>
+                <div style="color: var(--success); font-size: 0.85rem; font-weight: 600;">From paid orders</div>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="recent-orders" style="background: var(--white); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--dark);">Recent Orders</h2>
+                <a href="{{ url_for('admin_orders') }}" style="color: var(--primary); font-weight: 600; text-decoration: none;">View All →</a>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--light);">
+                            <th style="padding: 12px; text-align: left; color: var(--gray); font-weight: 600; font-size: 0.85rem;">Order #</th>
+                            <th style="padding: 12px; text-align: left; color: var(--gray); font-weight: 600; font-size: 0.85rem;">Customer</th>
+                            <th style="padding: 12px; text-align: left; color: var(--gray); font-weight: 600; font-size: 0.85rem;">Amount</th>
+                            <th style="padding: 12px; text-align: left; color: var(--gray); font-weight: 600; font-size: 0.85rem;">Status</th>
+                            <th style="padding: 12px; text-align: left; color: var(--gray); font-weight: 600; font-size: 0.85rem;">Date</th>
+                            <th style="padding: 12px; text-align: left; color: var(--gray); font-weight: 600; font-size: 0.85rem;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in recent_orders %}
+                        <tr style="border-bottom: 1px solid var(--light);">
+                            <td style="padding: 16px 12px; font-weight: 600; color: var(--dark);">{{ order.order_number }}</td>
+                            <td style="padding: 16px 12px; color: var(--gray);">{{ order.shipping_name }}</td>
+                            <td style="padding: 16px 12px; font-weight: 600; color: var(--primary);">R{{ "%.2f"|format(order.total_amount) }}</td>
+                            <td style="padding: 16px 12px;">
+                                <span class="status-badge" style="display: inline-block; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; background: {{ '#dbeafe' if order.status == 'pending' else '#dcfce7' if order.status == 'delivered' else '#fef3c7' if order.status == 'processing' else '#fee2e2' }}; color: {{ '#1e40af' if order.status == 'pending' else '#166534' if order.status == 'delivered' else '#92400e' if order.status == 'processing' else '#991b1b' }};">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td style="padding: 16px 12px; color: var(--gray);">{{ order.created_at.strftime('%d %b %Y') }}</td>
+                            <td style="padding: 16px 12px;">
+                                <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" style="color: var(--primary); font-weight: 600; text-decoration: none;">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+.admin-nav-item:hover,
+.admin-nav-item.active {
+    background: var(--dark-light);
+    color: var(--white) !important;
+}
+
+@media (max-width: 768px) {
+    .admin-sidebar {
+        display: none;
+    }
+    .admin-content {
+        margin-left: 0;
+    }
+}
+</style>
+{% endblock %}

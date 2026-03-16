@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}My Addresses{% endblock %}
+
+{% block content %}
+<div class="profile-page" style="min-height: 100vh; padding-top: 100px; padding-bottom: 60px; background: var(--light);">
+    <div class="container">
+        <div style="display: grid; grid-template-columns: 300px 1fr; gap: 32px; max-width: 1200px; margin: 0 auto;">
+            <!-- Sidebar -->
+            <aside style="background: var(--white); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow); height: fit-content;">
+                <nav class="profile-nav" style="display: flex; flex-direction: column; gap: 8px;">
+                    <a href="{{ url_for('profile') }}" class="profile-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--gray); text-decoration: none; font-weight: 500; transition: var(--transition);">
+                        <span>👤</span> Profile Overview
+                    </a>
+                    <a href="{{ url_for('edit_profile') }}" class="profile-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--gray); text-decoration: none; font-weight: 500; transition: var(--transition);">
+                        <span>✏️</span> Edit Profile
+                    </a>
+                    <a href="{{ url_for('addresses') }}" class="profile-nav-item active" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--primary); background: rgba(99, 102, 241, 0.1); text-decoration: none; font-weight: 600; transition: var(--transition);">
+                        <span>📍</span> Addresses
+                    </a>
+                    <a href="{{ url_for('orders') }}" class="profile-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--gray); text-decoration: none; font-weight: 500; transition: var(--transition);">
+                        <span>📦</span> My Orders
+                    </a>
+                    <a href="{{ url_for('change_password') }}" class="profile-nav-item" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--gray); text-decoration: none; font-weight: 500; transition: var(--transition);">
+                        <span>🔒</span> Change Password
+                    </a>
+                </nav>
+                <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--light);">
+                    <a href="/" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius); color: var(--gray); text-decoration: none; font-weight: 500; transition: var(--transition);">
+                        <span>🏪</span> Back to Store
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                    <div>
+                        <h1 style="font-size: 2rem; font-weight: 800; color: var(--dark); margin-bottom: 8px;">My Addresses</h1>
+                        <p style="color: var(--gray);">Manage your shipping and billing addresses</p>
+                    </div>
+                    <a href="{{ url_for('add_address') }}" class="btn btn-gradient" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: 50px; background: var(--gradient); color: var(--white); border: none; font-weight: 600; cursor: pointer; text-decoration: none;">
+                        ➕ Add Address
+                    </a>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" style="padding: 16px 20px; border-radius: var(--radius); margin-bottom: 24px; background: {{ '#dcfce7' if category == 'success' else '#fee2e2' if category == 'danger' else '#dbeafe' }}; color: {{ '#166534' if category == 'success' else '#991b1b' if category == 'danger' else '#1e40af' }};">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% if addresses %}
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px;">
+                        {% for address in addresses %}
+                        <div class="address-card" style="background: var(--white); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow); position: relative;">
+                            {% if address.is_default %}
+                                <span style="position: absolute; top: 16px; right: 16px; padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; background: var(--primary); color: var(--white);">Default</span>
+                            {% endif %}
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                                <span style="font-size: 1.5rem;">{{ '🏠' if address.address_type == 'shipping' else '💳' }}</span>
+                                <div>
+                                    <h3 style="font-weight: 700; color: var(--dark); text-transform: capitalize;">{{ address.address_type }} Address</h3>
+                                    <p style="color: var(--gray); font-size: 0.9rem;">{{ address.country }}</p>
+                                </div>
+                            </div>
+                            <div style="color: var(--gray); line-height: 1.8; margin-bottom: 20px;">
+                                <p>{{ address.street_address }}</p>
+                                {% if address.address_line2 %}
+                                    <p>{{ address.address_line2 }}</p>
+                                {% endif %}
+                                <p>{{ address.city }}, {{ address.province or address.state }} {{ address.postal_code }}</p>
+                                <p>{{ address.phone }}</p>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <a href="{{ url_for('edit_address', address_id=address.id) }}" class="btn" style="flex: 1; padding: 10px 20px; border-radius: 8px; background: rgba(99, 102, 241, 0.1); color: var(--primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; text-align: center;">Edit</a>
+                                <form action="{{ url_for('delete_address', address_id=address.id) }}" method="POST" style="flex: 1;" onsubmit="return confirm('Are you sure you want to delete this address?');">
+                                    <button type="submit" style="width: 100%; padding: 10px 20px; border-radius: 8px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; cursor: pointer; font-weight: 600; font-size: 0.9rem;">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div style="background: var(--white); border-radius: var(--radius-lg); padding: 60px 40px; text-align: center; box-shadow: var(--shadow);">
+                        <div style="font-size: 5rem; margin-bottom: 24px;">📍</div>
+                        <h3 style="font-weight: 700; color: var(--dark); margin-bottom: 12px;">No addresses yet</h3>
+                        <p style="color: var(--gray); margin-bottom: 24px;">Add your first address for faster checkout</p>
+                        <a href="{{ url_for('add_address') }}" class="btn btn-gradient" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 50px; background: var(--gradient); color: var(--white); border: none; font-weight: 600; cursor: pointer; text-decoration: none;">
+                            ➕ Add Address
+                        </a>
+                    </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-nav-item:hover {
+    background: var(--light);
+    color: var(--dark);
+}
+
+.alert {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+{% endblock %}

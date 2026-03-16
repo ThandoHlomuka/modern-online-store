@@ -1,50 +1,80 @@
 @echo off
-echo =====================================
-echo   Git Repository Setup
-echo =====================================
+REM Modern Online Store - Git Setup Script for Windows
+REM This script initializes Git and prepares for deployment
+
+echo.
+echo ====================================================================
+echo   Modern Online Store - Git Setup
+echo   Preparing for Vercel deployment
+echo ====================================================================
 echo.
 
-REM Check if git is already initialized
-if exist ".git" (
-    echo Git repository already initialized.
-    echo.
-) else (
+REM Check if Git is installed
+git --version >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] Git is not installed or not in PATH
+    echo Please install Git from https://git-scm.com
+    pause
+    exit /b 1
+)
+
+echo [OK] Git found
+echo.
+
+REM Initialize Git repository if not already initialized
+if not exist ".git\" (
     echo Initializing Git repository...
     git init
-    echo.
+    echo [OK] Git repository initialized
+) else (
+    echo [OK] Git repository already exists
 )
+echo.
 
-REM Configure git user (if not configured)
-git config user.name >nul 2>&1
+REM Check if .env is in .gitignore
+findstr /C:".env" .gitignore >nul 2>&1
 if errorlevel 1 (
-    echo Setting up Git user...
-    set /p gitname="Enter your GitHub username: "
-    git config user.name "%gitname%"
-    
-    set /p gitemail="Enter your GitHub email: "
-    git config user.email "%gitemail%"
-    echo.
+    echo [WARNING] .env is not in .gitignore
+    echo Adding .env to .gitignore...
+    echo .env >> .gitignore
+) else (
+    echo [OK] .env is properly ignored
 )
-
-REM Initial commit
-echo Creating initial commit...
-git add .
-git commit -m "Initial commit: Modern Online Store"
 echo.
 
-echo =====================================
-echo   Setup Complete!
-echo =====================================
+REM Create .gitignore if it doesn't exist
+if not exist ".gitignore" (
+    echo Creating .gitignore...
+    echo .env >> .gitignore
+    echo __pycache__/ >> .gitignore
+    echo *.pyc >> .gitignore
+    echo venv/ >> .gitignore
+    echo .env >> .gitignore
+    echo [OK] .gitignore created
+)
 echo.
-echo Next steps:
-echo 1. Create a new repository on GitHub (do not initialize with README)
-echo 2. Copy the commands from GitHub to connect your repository
+
+REM Show status
+echo Current Git status:
+git status
 echo.
-echo Example:
-echo   git remote add origin https://github.com/YOUR_USERNAME/REPO_NAME.git
-echo   git branch -M main
-echo   git push -u origin main
+
+echo ====================================================================
+echo   Next Steps for GitHub Deployment:
+echo ====================================================================
 echo.
-echo Or run 'deploy.bat' after setting up the remote.
+echo 1. Create a new repository on GitHub
+echo 2. Run these commands:
+echo.
+echo    git add .
+echo    git commit -m "Initial commit - Modern Online Store"
+echo    git branch -M main
+echo    git remote add origin https://github.com/YOUR_USERNAME/modern-online-store.git
+echo    git push -u origin main
+echo.
+echo 3. Go to Vercel and import your GitHub repository
+echo 4. Set environment variables in Vercel dashboard
+echo.
+echo For detailed instructions, see DEPLOYMENT.md
 echo.
 pause

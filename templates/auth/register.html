@@ -10,7 +10,7 @@
                 <h1 style="font-size: 2rem; font-weight: 800; color: var(--dark); margin-bottom: 8px;">Create Account</h1>
                 <p style="color: var(--gray);">Join ModernStore for exclusive deals</p>
             </div>
-            
+
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -20,11 +20,11 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
-            
+
             <form method="POST" action="{{ url_for('register') }}">
                 {{ form.hidden_tag() }}
-                
-                <div class="form-row">
+
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                     <div class="form-group">
                         <label for="first_name">First Name</label>
                         {{ form.first_name(class="form-control", placeholder="John") }}
@@ -34,39 +34,50 @@
                         {{ form.last_name(class="form-control", placeholder="Doe") }}
                     </div>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="username">Username *</label>
+                    <label for="username">Username</label>
                     {{ form.username(class="form-control", placeholder="Choose a username", required=true) }}
                     {% if form.username.errors %}
-                        <small style="color: var(--danger);">{{ form.username.errors[0] }}</small>
+                        {% for error in form.username.errors %}
+                            <small style="color: var(--danger);">{{ error }}</small>
+                        {% endfor %}
                     {% endif %}
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    {{ form.email(class="form-control", placeholder="john@example.com", required=true) }}
+                    <label for="email">Email Address</label>
+                    {{ form.email(class="form-control", placeholder="you@example.com", required=true) }}
                     {% if form.email.errors %}
-                        <small style="color: var(--danger);">{{ form.email.errors[0] }}</small>
+                        {% for error in form.email.errors %}
+                            <small style="color: var(--danger);">{{ error }}</small>
+                        {% endfor %}
                     {% endif %}
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="password">Password *</label>
-                    {{ form.password(class="form-control", placeholder="Min. 6 characters", required=true) }}
+                    <label for="password">Password</label>
+                    {{ form.password(class="form-control", placeholder="Minimum 6 characters", required=true, minlength=6) }}
                     {% if form.password.errors %}
-                        <small style="color: var(--danger);">{{ form.password.errors[0] }}</small>
+                        {% for error in form.password.errors %}
+                            <small style="color: var(--danger);">{{ error }}</small>
+                        {% endfor %}
                     {% endif %}
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="confirm_password">Confirm Password *</label>
-                    {{ form.confirm_password(class="form-control", placeholder="Re-enter password", required=true) }}
+                    <label for="confirm_password">Confirm Password</label>
+                    {{ form.confirm_password(class="form-control", placeholder="Re-enter your password", required=true) }}
+                    {% if form.confirm_password.errors %}
+                        {% for error in form.confirm_password.errors %}
+                            <small style="color: var(--danger);">{{ error }}</small>
+                        {% endfor %}
+                    {% endif %}
                 </div>
-                
-                {{ form.submit(class="btn btn-gradient btn-block btn-lg mt-4") }}
+
+                {{ form.submit(class="btn btn-gradient btn-block btn-lg") }}
             </form>
-            
+
             <div class="text-center mt-4" style="padding-top: 24px; border-top: 1px solid var(--light);">
                 <p style="color: var(--gray);">Already have an account? <a href="{{ url_for('login') }}" style="color: var(--primary); font-weight: 600;">Sign in</a></p>
             </div>
@@ -90,12 +101,6 @@
     outline: none;
     border-color: var(--primary);
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
 }
 
 .alert {
