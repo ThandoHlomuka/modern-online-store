@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "app.py",
+      "src": "wsgi.py",
       "use": "@vercel/python",
       "config": {
         "runtime": "python3.11"
@@ -16,13 +16,12 @@
     },
     {
       "src": "/(.*)",
-      "dest": "app.py"
+      "dest": "wsgi.py"
     }
   ],
   "env": {
     "FLASK_ENV": "production",
     "DEBUG": "False",
     "PYTHON_VERSION": "3.11"
-  },
-  "outputDirectory": "static"
+  }
 }
