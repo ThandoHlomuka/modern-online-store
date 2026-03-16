@@ -952,5 +952,5 @@ def internal_error(e):
     return render_template('500.html'), 500
 
 
-# Export for Vercel
-handler = app
+# Vercel entry point - DO NOT RENAME
+app
