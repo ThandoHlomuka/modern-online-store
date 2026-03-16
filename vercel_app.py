@@ -10,7 +10,13 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 # Set environment variables BEFORE any imports
 os.environ['FLASK_ENV'] = 'production'
-os.environ['DEBUG'] = 'False'
+os.environ['DEBUG'] = 'True'  # Enable debug for troubleshooting
+
+# Enable detailed error logging
+import traceback
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 from flask import Flask, session, request, jsonify, render_template, redirect, url_for, flash, abort
 from flask_bcrypt import Bcrypt
@@ -51,7 +57,14 @@ login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
 # Initialize database (lazy initialization - tables created on first request)
-db.init_app(app)
+try:
+    logger.info(f"Initializing database with URI: {DATABASE_URI}")
+    logger.info(f"USE_POSTGRES: {USE_POSTGRES}")
+    db.init_app(app)
+    logger.info("Database initialized successfully")
+except Exception as e:
+    logger.error(f"Database initialization error: {e}")
+    logger.error(traceback.format_exc())
 
 
 @login_manager.user_loader
