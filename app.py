@@ -15,14 +15,14 @@ import json
 from datetime import datetime
 
 from database import DATABASE_URI, USE_POSTGRES
-from models import db, User, Product, Order, OrderItem, Address, Cart, CartItem, init_db
+from models import db, User, Product, Order, OrderItem, Address, Cart, CartItem
 from models import ShippingZone, ShippingMethod, CurrencyRate, OrderTracking
-from forms import (LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm, 
+from forms import (LoginForm, RegistrationForm, ProfileForm, ChangePasswordForm,
                    AddressForm, ProductForm, OrderStatusForm, ShippingZoneForm)
-from currency import (convert_currency, format_currency, get_currency_options, 
+from currency import (convert_currency, format_currency, get_currency_options,
                       DEFAULT_CURRENCY, CURRENCY_SYMBOLS, EXCHANGE_RATES)
 from shipping import (get_shipping_options, calculate_shipping_cost, get_shipping_zone,
-                      estimate_order_weight, bobgo_create_shipment, bobgo_track_shipment)
+                      estimate_order_weight)
 from upload import process_avatar_upload, upload_base64_image, get_avatar_url, delete_from_supabase
 
 # Initialize extensions
