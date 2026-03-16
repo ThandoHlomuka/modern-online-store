@@ -33,8 +33,8 @@ def get_database_uri():
 def get_supabase_config():
     """Get Supabase configuration"""
     return {
-        'url': os.environ.get('SUPABASE_URL', os.environ.get('NEXT_PUBLIC_SUPABASE_URL', '')),
-        'key': os.environ.get('SUPABASE_KEY', os.environ.get('SUPABASE_ANON_KEY', os.environ.get('NEXT_PUBLIC_SUPABASE_ANON_KEY', ''))),
+        'url': os.environ.get('SUPABASE_URL', ''),
+        'key': os.environ.get('SUPABASE_KEY', ''),
         'storage_bucket': os.environ.get('SUPABASE_STORAGE_BUCKET', 'avatars')
     }
 
