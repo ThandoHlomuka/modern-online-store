@@ -9,20 +9,32 @@ import base64
 import io
 from PIL import Image
 from supabase import create_client, Client
-from database import SUPABASE_CONFIG
-
-# Initialize Supabase client
-supabase: Client = None
-if SUPABASE_CONFIG['url'] and SUPABASE_CONFIG['key']:
-    try:
-        supabase = create_client(SUPABASE_CONFIG['url'], SUPABASE_CONFIG['key'])
-    except Exception as e:
-        print(f'Supabase client initialization error: {e}')
+from database import get_supabase_config
 
 # Allowed file types
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 AVATAR_SIZE = (400, 400)  # Resize avatar to 400x400
+
+# Supabase client - lazy initialization
+_supabase_client = None
+
+
+def get_supabase_client():
+    """Get or create Supabase client (lazy initialization)"""
+    global _supabase_client
+    if _supabase_client is not None:
+        return _supabase_client
+
+    config = get_supabase_config()
+    if config['url'] and config['key']:
+        try:
+            _supabase_client = create_client(config['url'], config['key'])
+        except Exception as e:
+            print(f'Supabase client initialization error: {e}')
+            _supabase_client = None
+
+    return _supabase_client
 
 
 def allowed_file(filename):
@@ -56,35 +68,36 @@ def resize_image(image_data, size=AVATAR_SIZE):
 def upload_to_supabase(file_data, filename, bucket='avatars', user_id=None):
     """
     Upload file to Supabase Storage
-    
+
     Args:
         file_data: bytes of file content
         filename: original filename
         bucket: Supabase storage bucket name
         user_id: optional user ID for folder organization
-    
+
     Returns:
         dict with 'success', 'url', 'path' keys
     """
-    if not supabase:
+    client = get_supabase_client()
+    if not client:
         return {'success': False, 'error': 'Supabase not configured'}
-    
+
     try:
         # Generate unique path
         folder = f'user_{user_id}' if user_id else 'uploads'
         unique_filename = generate_unique_filename(filename)
         path = f'{folder}/{unique_filename}'
-        
+
         # Upload to Supabase
-        response = supabase.storage.from_(bucket).upload(
+        response = client.storage.from_(bucket).upload(
             path,
             file_data,
             {'content-type': 'image/jpeg'}
         )
-        
+
         # Get public URL
-        public_url = supabase.storage.from_(bucket).get_public_url(path)
-        
+        public_url = client.storage.from_(bucket).get_public_url(path)
+
         return {
             'success': True,
             'url': public_url,
@@ -98,19 +111,20 @@ def upload_to_supabase(file_data, filename, bucket='avatars', user_id=None):
 def delete_from_supabase(path, bucket='avatars'):
     """
     Delete file from Supabase Storage
-    
+
     Args:
         path: file path in storage
         bucket: Supabase storage bucket name
-    
+
     Returns:
         dict with 'success' key
     """
-    if not supabase:
+    client = get_supabase_client()
+    if not client:
         return {'success': False, 'error': 'Supabase not configured'}
-    
+
     try:
-        supabase.storage.from_(bucket).remove([path])
+        client.storage.from_(bucket).remove([path])
         return {'success': True}
     except Exception as e:
         return {'success': False, 'error': str(e)}
@@ -195,10 +209,10 @@ def get_default_avatar_url(name):
 def get_avatar_url(user):
     """
     Get user's avatar URL
-    
+
     Args:
         user: User object
-    
+
     Returns:
         Avatar URL string
     """
@@ -207,11 +221,12 @@ def get_avatar_url(user):
         if user.avatar.startswith('http'):
             return user.avatar
         # Otherwise, construct Supabase URL
-        if supabase:
+        client = get_supabase_client()
+        if client:
             try:
-                return supabase.storage.from_('avatars').get_public_url(user.avatar)
+                return client.storage.from_('avatars').get_public_url(user.avatar)
             except:
                 pass
-    
+
     # Return default avatar
     return get_default_avatar_url(user.get_full_name() if user else 'User')
