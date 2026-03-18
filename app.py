@@ -46,6 +46,12 @@ login_manager.login_message_category = 'info'
 # Initialize database
 db.init_app(app)
 
+# Ensure tables are created (idempotent)
+with app.app_context():
+    from models import create_default_data
+    db.create_all()
+    create_default_data()
+
 
 @login_manager.user_loader
 def load_user(user_id):
