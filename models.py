@@ -361,5 +361,51 @@ def create_default_data():
             rate = CurrencyRate(**rate_data)
             db.session.add(rate)
     
+    # Create default products
+    default_products = [
+        {
+            'name': 'Premium Wireless Headphones',
+            'description': 'Experience studio-quality sound with our flagship wireless headphones.',
+            'price': 2499.00,
+            'category': 'Electronics',
+            'image': 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80',
+            'stock_quantity': 50,
+            'is_featured': True
+        },
+        {
+            'name': 'Minimalist Smart Watch',
+            'description': 'Stay connected in style with this sleek, modern smartwatch.',
+            'price': 1899.00,
+            'category': 'Electronics',
+            'image': 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80',
+            'stock_quantity': 35,
+            'is_featured': True
+        },
+        {
+            'name': 'Leather Travel Bag',
+            'description': 'Handcrafted genuine leather bag for your weekend getaways.',
+            'price': 1200.00,
+            'category': 'Bags',
+            'image': 'https://images.unsplash.com/photo-1547949003-9792a18a2601?w=800&q=80',
+            'stock_quantity': 20,
+            'is_featured': True
+        },
+        {
+            'name': 'Ergonomic Office Chair',
+            'description': 'Maximum comfort for those long work-from-home sessions.',
+            'price': 3500.00,
+            'category': 'Home',
+            'image': 'https://images.unsplash.com/photo-1505843490701-5be55ccb0e65?w=800&q=80',
+            'stock_quantity': 15,
+            'is_featured': False
+        }
+    ]
+    
+    for product_data in default_products:
+        existing = Product.query.filter_by(name=product_data['name']).first()
+        if not existing:
+            product = Product(**product_data)
+            db.session.add(product)
+            
     db.session.commit()
     print('Default data created!')

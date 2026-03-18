@@ -16,6 +16,5 @@
       "dest": "app.py"
     }
   ],
-  "outputDirectory": "static",
   "installCommand": "pip install -r requirements.txt"
 }
