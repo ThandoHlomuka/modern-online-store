@@ -13,7 +13,9 @@ def get_database_uri():
         os.environ.get('DATABASE_URL') or
         os.environ.get('POSTGRES_URL') or
         os.environ.get('POSTGRES_URL_NON_POOLING') or
-        os.environ.get('SUPABASE_DB_URL')
+        os.environ.get('SUPABASE_DB_URL') or
+        os.environ.get('supabasedb_POSTGRES_URL') or
+        os.environ.get('supabasedb_POSTGRES_URL_NON_POOLING')
     )
 
     if not database_url:
@@ -25,6 +27,16 @@ def get_database_uri():
     # Convert postgres:// to postgresql:// for SQLAlchemy compatibility
     if database_url.startswith('postgres://'):
         database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+    # Strip problematic Supabase/Vercel query parameters
+    # Specifically 'supa=xxx' which causes psycopg2.ProgrammingError: invalid connection option "supa"
+    if '?' in database_url:
+        base_url, query_string = database_url.split('?', 1)
+        params = [p for p in query_string.split('&') if not p.startswith('supa=')]
+        if params:
+            database_url = f"{base_url}?{'&'.join(params)}"
+        else:
+            database_url = base_url
 
     return database_url
 
