@@ -1,48 +1,95 @@
-# Vercel ignore file - clear cache on every deploy
-# This forces Vercel to rebuild from scratch
+# Vercel ignore file - Force fresh builds on every deploy
+# This clears all cached builds and forces Vercel to rebuild from scratch
 
-# Force cache clear
+# Vercel cache directories - MUST be ignored to prevent stale builds
 .cache/
 .vercel/cache/
+.vercel/output/
 
-# Development files
-.env
-.env.local
-.env.*.local
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# IDE
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDE and editor files
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+.DS_Store
+
+# Environment files (never deploy these)
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
 
 # Git
 .git/
 .gitignore
 
-# Node modules
+# Node modules (if any)
 node_modules/
 
-# Build artifacts
+# Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
 
 # OS files
-.DS_Store
 Thumbs.db
+.DS_Store
 
 # Local scripts
 deploy.bat
 run.bat
+setup.bat
+setup-git.bat
 
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.so
-.eggs/
-*.egg-info/
+# Documentation (optional - reduce build size)
+# README.md
+# DEPLOYMENT.md
+# QUICKSTART.md
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Supabase local development
+.temp/

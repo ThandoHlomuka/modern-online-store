@@ -43,8 +43,8 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
-# Initialize database (lazy - only when needed)
-# init_db(app) is called only when running locally, not on Vercel
+# Initialize database
+db.init_app(app)
 
 
 @login_manager.user_loader
